@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ContactDao {
-static const String _tableName = 'contacts';
+  static const String _tableName = 'contacts';
   static const String _id = 'id';
   static const String _name = 'name';
   static const String _accountNumber = 'account_number';
@@ -23,12 +23,24 @@ static const String _tableName = 'contacts';
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  Future<void> update(Contact contact) async {
+    final Database db = await getDataBase();
+    await db.update(_tableName, _toMap(contact),
+        where: 'id = ?', whereArgs: [contact.id]);
+  }
+
   Future<List<Contact>> findAll() async {
     final Database db = await getDataBase();
     final List<Map<String, dynamic>> result = await db.query(_tableName);
-    debugPrint(result.toString());
     List<Contact> contacts = _toList(result);
     return contacts;
+  }
+
+  Future<Contact> findById(Contact contact) async {
+    final Database db = await getDataBase();
+    List<Map<String, Object>> result =
+        await db.query(_tableName, where: '$_id = ?', whereArgs: [contact.id]);
+    return _toList(result).first;
   }
 
   Map<String, dynamic> _toMap(Contact contact) {
