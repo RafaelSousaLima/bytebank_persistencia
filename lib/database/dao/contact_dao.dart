@@ -43,6 +43,11 @@ class ContactDao {
     return _toList(result).first;
   }
 
+  Future<int> delete(Contact contact) async {
+    final Database db = await getDataBase();
+    return db.delete(_tableName, where: '$_id = ?', whereArgs: [contact.id]);
+  }
+
   Map<String, dynamic> _toMap(Contact contact) {
     final Map<String, dynamic> contactMap = Map();
     contactMap[_name] = contact.name;
